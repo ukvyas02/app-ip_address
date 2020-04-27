@@ -106,9 +106,10 @@ function main() {
       if (error) {
         console.error(`  Error returned from GET request: ${error}`);
       }
-      //console.log(`  1Response returned from GET request: ${data}`);
+      console.log(`  1Response returned from GET request: ${JSON.stringify(data)}`);
+      
      // console.log(` ${data}`+ data);
-     console.log( JSON.stringify(data));
+    // console.log( JSON.stringify(data));
     });
   }
   // Iterate over sampleIpv4s and pass the element's value to getIpv4MappedIpv6Address().
