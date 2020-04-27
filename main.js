@@ -15,7 +15,23 @@ const path = require('path');
  */
 const { getIpv4MappedIpv6Address } = require(path.join(__dirname, 'ipv6.js'));
 
-class IpAddress {
+/*
+  Import the ip-cidr npm package.
+  See https://www.npmjs.com/package/ip-cidr
+  The ip-cidr package exports a class.
+  Assign the class definition to variable IPCIDR.
+*/
+const IPCIDR = require('ip-cidr');
+
+
+/**
+ * Calculate and return the first host IP address from a CIDR subnet.
+ * @param {string} cidrStr - The IPv4 subnet expressed
+ *                 in CIDR format.
+ * @param {callback} callback - A callback function.
+ * @return {string} (firstIpAddress) - An IPv4 address.
+ */
+ class IpAddress {
   constructor() {
     // IAP's global log object is used to output errors, warnings, and other
     // information to the console, IAP's log files, or a Syslog server.
@@ -48,6 +64,15 @@ class IpAddress {
     limit: 1
   };
 
+
+// jason object ...
+  
+ let jsonObj =  {
+                    ipv4: null,
+                    ipv6: null
+                };
+
+
   // Use the object's isValid() method to verify the passed CIDR.
   if (!cidr.isValid()) {
     // If the passed CIDR is invalid, set an error message.
@@ -55,22 +80,10 @@ class IpAddress {
   } else {
     // If the passed CIDR is valid, call the object's toArray() method.
     // Notice the destructering assignment syntax to get the value of the first array's element.
-    [firstIpAddress] = cidr.toArray(options);
-   
-  }
-
-// var jsonString = "{\"key\":\"value\"}";
-let ipv6ip=null;
-
-if(firstIpAddress!=null){
-  ipv6ip=getIpv4MappedIpv6Address(firstIpAddress);
-}
-
- let jsonObj =  {
-                    ipv4: firstIpAddress,
-                    ipv6: ipv6ip
-                };
-
+    [jsonObj.ipv4] = cidr.toArray(options);
+    [jsonObj.ipv6ip]=getIpv4MappedIpv6Address(jsonObj.ipv4);
+  }  
+  
 //var jsonObj = JSON.parse(jsonString);
 //console.log("test111111111"+ jsonObj.ipv4);
  
@@ -78,11 +91,9 @@ if(firstIpAddress!=null){
   // Node.js convention is to pass error data as the first argument to a callback.
   // The IAP convention is to pass returned data as the first argument and error
   // data as the second argument to the callback function.
-
-    
-  
   return callback(jsonObj, callbackError);
 }
+
 
   
 }
