@@ -15,6 +15,15 @@ const path = require('path');
  */
 const { getIpv4MappedIpv6Address } = require(path.join(__dirname, 'ipv6.js'));
 
+/*
+  Import the ip-cidr npm package.
+  See https://www.npmjs.com/package/ip-cidr
+  The ip-cidr package exports a class.
+  Assign the class definition to variable IPCIDR.
+*/
+const IPCIDR = require('ip-cidr');
+
+
 class IpAddress {
   constructor() {
     // IAP's global log object is used to output errors, warnings, and other
@@ -39,8 +48,8 @@ class IpAddress {
   //let callbackError = null;
   
   let firstIpAddress = {
-  ipv4=null,
-  ipv6=null
+  ipv4 : null,
+  ipv6 : null
   };
   
   let callbackError = null;
