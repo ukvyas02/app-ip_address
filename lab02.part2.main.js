@@ -13,7 +13,7 @@ const IPCIDR = require('ip-cidr');
  * @param {callback} callback - A callback function.
  * @return {string} (firstIpAddress) - An IPv4 address.
  */
-function getFirstIpAddress(cidrStr,ipv4, callback) {
+function getFirstIpAddress(cidrStr, callback) {
 
   // Initialize return arguments for callback
   let firstIpAddress = null;
@@ -36,16 +36,25 @@ function getFirstIpAddress(cidrStr,ipv4, callback) {
   } else {
     // If the passed CIDR is valid, call the object's toArray() method.
     // Notice the destructering assignment syntax to get the value of the first array's element.
-   // [firstIpAddress] = cidr.toArray(options);
-   let mappedAddressIpv4Ipv6 = getIpv4MappedIpv6Address(ipv4);
-    //console.log("mappedAddressIpv4Ipv6" + mappedAddressIpv4Ipv6);
-    if(mappedAddressIpv4Ipv6){
-     //console.log("converted");
-     firstIpAddress="ipv4" + ":" +  ipv4 + "," + "ipv6 :" + mappedAddressIpv4Ipv6;
-    }else{
-      firstIpAddress="ipv4" + ":" +  null + "," + "ipv6 :" + null;
-    }
+    [firstIpAddress] = cidr.toArray(options);
+   
   }
+
+// var jsonString = "{\"key\":\"value\"}";
+let ipv6ip=null;
+
+if(firstIpAddress!=null){
+  ipv6ip=getIpv4MappedIpv6Address(firstIpAddress);
+}
+
+ let jsonObj =  {
+                    ipv4: firstIpAddress,
+                    ipv6: ipv6ip
+                };
+
+//var jsonObj = JSON.parse(jsonString);
+//console.log("test111111111"+ jsonObj.ipv4);
+ 
   // Call the passed callback function.
   // Node.js convention is to pass error data as the first argument to a callback.
   // The IAP convention is to pass returned data as the first argument and error
@@ -53,7 +62,7 @@ function getFirstIpAddress(cidrStr,ipv4, callback) {
 
     
   
-  return callback(firstIpAddress, callbackError);
+  return callback(jsonObj, callbackError);
 }
 
 /**
@@ -122,14 +131,15 @@ function main() {
     console.log(`\n--- Test Number ${i + 1} getFirstIpAddress(${sampleCidrs[i]}) ---`);
     // Call getFirstIpAddress and pass the test subnet and an anonymous callback function.
     // The callback is using the fat arrow operator: () => { }
-    getFirstIpAddress(sampleCidrs[i],sampleIpv4s[i], (data, error) => {
+    getFirstIpAddress(sampleCidrs[i], (data, error) => {
       // Now we are inside the callback function.
       // Display the results on the console.
       if (error) {
         console.error(`  Error returned from GET request: ${error}`);
       }
       //console.log(`  1Response returned from GET request: ${data}`);
-      console.log(` ${data}`);
+     // console.log(` ${data}`+ data);
+     console.log( JSON.stringify(data));
     });
   }
   // Iterate over sampleIpv4s and pass the element's value to getIpv4MappedIpv6Address().
