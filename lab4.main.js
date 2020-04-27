@@ -1,29 +1,3 @@
-/*
-  Import the built-in path module.
-  See https://nodejs.org/api/path.html
-  The path module provides utilities for working with file and directory paths.
-  IAP requires the path module to access local file modules.
-  The path module exports an object.
-  Assign the imported object to variable path.
-*/
-const path = require('path');
-
-/**
- * Import helper function module located in the same directory
- * as this module. IAP requires the path object's join method
- * to unequivocally locate the file module.
- */
-const { getIpv4MappedIpv6Address } = require(path.join(__dirname, 'ipv6.js'));
-
-
-/*
-  Import the ip-cidr npm package.
-  See https://www.npmjs.com/package/ip-cidr
-  The ip-cidr package exports a class.
-  Assign the class definition to variable IPCIDR.
-*/
-const IPCIDR = require('ip-cidr');
-
 class IpAddress {
   constructor() {
     // IAP's global log object is used to output errors, warnings, and other
@@ -31,9 +5,10 @@ class IpAddress {
     // For more information, consult the Log Class guide on the Itential
     // Developer Hub https://developer.itential.io/ located
     // under Documentation -> Developer Guides -> Log Class Guide
-  log.info('Starting the IpAddress product.');
+    log.info('Starting the IpAddress product.');
   }
-    /**
+
+/**
  * Calculate and return the first host IP address from a CIDR subnet.
  * @param {string} cidrStr - The IPv4 subnet expressed
  *                 in CIDR format.
@@ -64,15 +39,35 @@ class IpAddress {
     // If the passed CIDR is valid, call the object's toArray() method.
     // Notice the destructering assignment syntax to get the value of the first array's element.
     [firstIpAddress] = cidr.toArray(options);
+   
   }
+
+// var jsonString = "{\"key\":\"value\"}";
+let ipv6ip=null;
+
+if(firstIpAddress!=null){
+  ipv6ip=getIpv4MappedIpv6Address(firstIpAddress);
+}
+
+ let jsonObj =  {
+                    ipv4: firstIpAddress,
+                    ipv6: ipv6ip
+                };
+
+//var jsonObj = JSON.parse(jsonString);
+//console.log("test111111111"+ jsonObj.ipv4);
+ 
   // Call the passed callback function.
   // Node.js convention is to pass error data as the first argument to a callback.
   // The IAP convention is to pass returned data as the first argument and error
   // data as the second argument to the callback function.
-  return callback(firstIpAddress, callbackError);
-}
-  
-} 
 
+    
+  
+  return callback(jsonObj, callbackError);
+}
+
+  
+}
 
 module.exports = new IpAddress;
