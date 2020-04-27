@@ -13,10 +13,18 @@ const IPCIDR = require('ip-cidr');
  * @param {callback} callback - A callback function.
  * @return {string} (firstIpAddress) - An IPv4 address.
  */
+
 function getFirstIpAddress(cidrStr, callback) {
 
   // Initialize return arguments for callback
-  let firstIpAddress = null;
+  //let firstIpAddress = null;
+  //let callbackError = null;
+  
+  let firstIpAddress = {
+  ipv4 : null,
+  ipv6 : null
+  };
+  
   let callbackError = null;
 
   // Instantiate an object from the imported class and assign the instance to variable cidr.
@@ -36,24 +44,10 @@ function getFirstIpAddress(cidrStr, callback) {
   } else {
     // If the passed CIDR is valid, call the object's toArray() method.
     // Notice the destructering assignment syntax to get the value of the first array's element.
-    [firstIpAddress] = cidr.toArray(options);
-   
+    [firstIpAddress.ipv4] = cidr.toArray(options);
+    [firstIpAddress.ipv6] = getIpv4MappedIpv6Address(firstIpAddress.ipv4);
   }
 
-// var jsonString = "{\"key\":\"value\"}";
-let ipv6ip=null;
-
-if(firstIpAddress!=null){
-  ipv6ip=getIpv4MappedIpv6Address(firstIpAddress);
-}
-
- let jsonObj =  {
-                    ipv4: firstIpAddress,
-                    ipv6: ipv6ip
-                };
-
-//var jsonObj = JSON.parse(jsonString);
-//console.log("test111111111"+ jsonObj.ipv4);
  
   // Call the passed callback function.
   // Node.js convention is to pass error data as the first argument to a callback.
@@ -62,7 +56,7 @@ if(firstIpAddress!=null){
 
     
   
-  return callback(jsonObj, callbackError);
+  return callback(firstIpAddress, callbackError);
 }
 
 /**
@@ -137,13 +131,11 @@ function main() {
       if (error) {
         console.error(`  Error returned from GET request: ${error}`);
       }
-      console.log(`  Response returned from GET request: ${JSON.stringify(data)}`);
-     // console.log(` ${data}`+ data);
-     //console.log( JSON.stringify(data));
+       console.log(`  1Response returned from GET request: ${JSON.stringify(data)}`);
+     
     });
   }
   // Iterate over sampleIpv4s and pass the element's value to getIpv4MappedIpv6Address().
- 
   for (let i = 0; i < sampleIpv4sLen; i++) {
     console.log(`\n--- Test Number ${i + 1} getIpv4MappedIpv6Address(${sampleIpv4s[i]}) ---`);
     // Assign the function results to a variable so we can check if a string or null was returned.
