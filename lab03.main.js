@@ -24,6 +24,7 @@ const { getIpv4MappedIpv6Address } = require(path.join(__dirname, 'ipv6.js'));
 */
 const IPCIDR = require('ip-cidr');
 
+
 /**
  * Calculate and return the first host IP address from a CIDR subnet.
  * @param {string} cidrStr - The IPv4 subnet expressed
@@ -31,10 +32,18 @@ const IPCIDR = require('ip-cidr');
  * @param {callback} callback - A callback function.
  * @return {string} (firstIpAddress) - An IPv4 address.
  */
+
 function getFirstIpAddress(cidrStr, callback) {
 
   // Initialize return arguments for callback
-  let firstIpAddress = null;
+  //let firstIpAddress = null;
+  //let callbackError = null;
+  
+  let firstIpAddress = {
+  ipv4 : null,
+  ipv6 : null
+  };
+  
   let callbackError = null;
 
   // Instantiate an object from the imported class and assign the instance to variable cidr.
@@ -54,24 +63,10 @@ function getFirstIpAddress(cidrStr, callback) {
   } else {
     // If the passed CIDR is valid, call the object's toArray() method.
     // Notice the destructering assignment syntax to get the value of the first array's element.
-    [firstIpAddress] = cidr.toArray(options);
-   
+    [firstIpAddress.ipv4] = cidr.toArray(options);
+    [firstIpAddress.ipv6] = getIpv4MappedIpv6Address(firstIpAddress.ipv4);
   }
 
-// var jsonString = "{\"key\":\"value\"}";
-let ipv6ip=null;
-
-if(firstIpAddress!=null){
-  ipv6ip=getIpv4MappedIpv6Address(firstIpAddress);
-}
-
- let jsonObj =  {
-                    ipv4: firstIpAddress,
-                    ipv6: ipv6ip
-                };
-
-//var jsonObj = JSON.parse(jsonString);
-//console.log("test111111111"+ jsonObj.ipv4);
  
   // Call the passed callback function.
   // Node.js convention is to pass error data as the first argument to a callback.
@@ -80,7 +75,7 @@ if(firstIpAddress!=null){
 
     
   
-  return callback(jsonObj, callbackError);
+  return callback(firstIpAddress, callbackError);
 }
 
 /*
