@@ -13,7 +13,6 @@ const IPCIDR = require('ip-cidr');
  * @param {callback} callback - A callback function.
  * @return {string} (firstIpAddress) - An IPv4 address.
  */
-
 function getFirstIpAddress(cidrStr, callback) {
 
   // Initialize return arguments for callback
@@ -26,7 +25,6 @@ function getFirstIpAddress(cidrStr, callback) {
   };
   
   let callbackError = null;
-
   // Instantiate an object from the imported class and assign the instance to variable cidr.
   const cidr = new IPCIDR(cidrStr);
   // Initialize options for the toArray() method.
@@ -45,10 +43,10 @@ function getFirstIpAddress(cidrStr, callback) {
     // If the passed CIDR is valid, call the object's toArray() method.
     // Notice the destructering assignment syntax to get the value of the first array's element.
     [firstIpAddress.ipv4] = cidr.toArray(options);
-    [firstIpAddress.ipv6] = getIpv4MappedIpv6Address(firstIpAddress.ipv4);
+    firstIpAddress.ipv6=getIpv4MappedIpv6Address(firstIpAddress.ipv4);
   }
 
- 
+   
   // Call the passed callback function.
   // Node.js convention is to pass error data as the first argument to a callback.
   // The IAP convention is to pass returned data as the first argument and error
@@ -58,6 +56,7 @@ function getFirstIpAddress(cidrStr, callback) {
   
   return callback(firstIpAddress, callbackError);
 }
+
 
 /**
  * Calculates an IPv4-mapped IPv6 address.
@@ -131,11 +130,13 @@ function main() {
       if (error) {
         console.error(`  Error returned from GET request: ${error}`);
       }
-       console.log(`  1Response returned from GET request: ${JSON.stringify(data)}`);
-     
+      console.log(`  Response returned from GET request: ${JSON.stringify(data)}`);
+     // console.log(` ${data}`+ data);
+     //console.log( JSON.stringify(data));
     });
   }
   // Iterate over sampleIpv4s and pass the element's value to getIpv4MappedIpv6Address().
+ 
   for (let i = 0; i < sampleIpv4sLen; i++) {
     console.log(`\n--- Test Number ${i + 1} getIpv4MappedIpv6Address(${sampleIpv4s[i]}) ---`);
     // Assign the function results to a variable so we can check if a string or null was returned.
